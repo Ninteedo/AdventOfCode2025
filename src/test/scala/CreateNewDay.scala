@@ -3,41 +3,42 @@ import TestRunner.dayString
 import java.io.{FileNotFoundException, InputStream}
 import java.net.{HttpURLConnection, URI}
 import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Paths, StandardCopyOption}
+import java.nio.file.{Files, Path, Paths, StandardCopyOption}
 import java.time.{LocalDate, LocalTime}
+
+import utility.toInt
 
 object CreateNewDay {
   private val YEAR = 2025
+  private val DAYS = 12
 
   def main(args: Array[String]): Unit = {
     val currentDate = LocalDate.now()
     if (currentDate.getYear <= YEAR && currentDate.getMonthValue < 12) {
-      println(s"🎄 It's not December $YEAR yet.")
-      return
+      printError(s"It is not December $YEAR yet.")
+      System.exit(1)
     }
     val afterDecember: Boolean = currentDate.getYear > YEAR
 
     val inputDirPath = Paths.get("input")
     if (!Files.exists(inputDirPath)) Files.createDirectory(inputDirPath)
 
-    val maxDay = if (afterDecember) 25 else
-      math.min(25, currentDate.getDayOfMonth - (if (LocalTime.now().getHour < 5) 1 else 0))
-    val day = (1 to maxDay).find { day =>
-      val filePath = Paths.get(s"input/${dayString(day)}.txt")
-      !Files.exists(filePath)
-    }
+    val maxDay = if (afterDecember) DAYS else
+      math.min(DAYS, currentDate.getDayOfMonth - (LocalTime.now().getHour < 5).toInt)
+    val day = (1 to maxDay).find(day => !Files.exists(getInputPath(day)))
 
     day match {
       case Some(day) =>
         createDayScript(day)
         downloadInput(YEAR, day)
+        System.exit(0)
       case None =>
-        println(s"👍 All input for December $YEAR have been downloaded, or it's too early to download next input.")
+        println(s"All input for $YEAR have been downloaded, or it's too early to download next input.")
     }
   }
 
-  def downloadInput(year: Int, day: Int): Unit = {
-    val filePath = Paths.get(s"input/${dayString(day)}.txt")
+  private def downloadInput(year: Int, day: Int): Unit = {
+    val filePath = getInputPath(day)
     if (!Files.exists(filePath)) {
       val url = URI.create(s"https://adventofcode.com/$year/day/$day/input").toURL
 
@@ -45,7 +46,7 @@ object CreateNewDay {
       connection.setRequestMethod("GET")
       val cookieFilePath = Paths.get(".cookie")
       if (!Files.exists(cookieFilePath)) {
-        throw new FileNotFoundException("❌ Could not find .cookie file for session cookie.")
+        throw new FileNotFoundException("Could not find .cookie file for session cookie.")
       }
       val sessionCookie = Files.readString(cookieFilePath).stripSuffix("\n")
       connection.setRequestProperty("Cookie", s"session=$sessionCookie")
@@ -54,20 +55,20 @@ object CreateNewDay {
       try {
         in = connection.getInputStream
         Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING)
-        println(s"⏬ Downloaded input for day $day.")
+        println(s"Downloaded input for day $day.")
       } catch {
         case e: Exception =>
-          println(s"❌ Error during downloading the file for day $day: ${e.getMessage}")
+          printError(s"Error during downloading the file for day $day: ${e.getMessage}")
       } finally {
         in.close()
         connection.disconnect()
       }
     } else {
-      println(s"👍 Input file already exists for day $day")
+      println(s"Input file already exists for day $day")
     }
   }
 
-  def createDayScript(day: Int): Unit = {
+  private def createDayScript(day: Int): Unit = {
     val dayPath = Paths.get(s"src/main/scala/days/Day${dayString(day)}.scala")
     if (!Files.exists(dayPath)) {
       val templatePath = Paths.get("src/main/scala/utility/DayTemplate.scala")
@@ -75,9 +76,15 @@ object CreateNewDay {
       fileContent = fileContent.replace("DayTemplate", s"Day${dayString(day)}")
         .replace("package utility", "package days\n\nimport utility.*")
       Files.writeString(dayPath, fileContent, StandardCharsets.UTF_8)
-      println(s"📜 Created script for day $day. ($dayPath)")
+      println(s"Created script for day $day. ($dayPath)")
     } else {
-      println(s"👍 Script file already exists for day $day. ($dayPath)")
+      printError(s"Script file already exists for day $day. ($dayPath)")
     }
+  }
+
+  private def getInputPath(day: Int): Path = Paths.get(s"input/${dayString(day)}.txt")
+
+  def printError(message: String): Unit = {
+    System.err.println(message)
   }
 }

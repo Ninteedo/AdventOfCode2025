@@ -8,8 +8,17 @@ package object utility {
   }
 
   extension (b: Boolean) {
+    /**
+     * Converts a [[Boolean]] to an [[Int]].
+     * @return 1 for `true` or 0 for `false`
+     */
     def toInt: Int = if b then 1 else 0
 
+    /**
+     * @param a  value
+     * @tparam A type of [[a]]
+     * @return [[Some(a)]] if `true`, otherwise [[None]]
+     */
     def thenOption[A](a: => A): Option[A] = if b then Some(a) else None
   }
 
