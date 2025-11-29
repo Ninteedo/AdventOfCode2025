@@ -1,4 +1,4 @@
-import utility.IDay
+import utility.{IDay, StopWatch}
 
 import java.io.File
 import java.net.URL
@@ -46,10 +46,10 @@ object TestRunner {
     val n = day.dayNumber
     val source: Source = Source.fromFile(s"input/${dayString(n)}.txt")
     val input: String = try source.mkString finally source.close()
-    val startTime = System.currentTimeMillis()
+    val stopWatch = StopWatch.start
     val result = day.execute(input)
-    val executionTime = System.currentTimeMillis() - startTime
-    val msg = s"Day ${dayString(n)}: (Part 1: ${result._1}, Part 2: ${result._2})  [${executionTime}ms]"
-    (msg, executionTime)
+    val executionMs = stopWatch.stop.millis
+    val msg = s"Day ${dayString(n)}: (Part 1: ${result.partA}, Part 2: ${result.partB})  [${executionMs}ms]"
+    (msg, executionMs)
   }
 }

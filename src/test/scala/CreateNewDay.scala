@@ -11,6 +11,7 @@ import utility.toInt
 object CreateNewDay {
   private val YEAR = 2025
   private val DAYS = 12
+  private val EST_OFFSET_HOURS = 5
 
   def main(args: Array[String]): Unit = {
     val currentDate = LocalDate.now()
@@ -24,7 +25,7 @@ object CreateNewDay {
     if (!Files.exists(inputDirPath)) Files.createDirectory(inputDirPath)
 
     val maxDay = if (afterDecember) DAYS else
-      math.min(DAYS, currentDate.getDayOfMonth - (LocalTime.now().getHour < 5).toInt)
+      math.min(DAYS, currentDate.getDayOfMonth - (LocalTime.now().getHour < EST_OFFSET_HOURS).toInt)
     val day = (1 to maxDay).find(day => !Files.exists(getInputPath(day)))
 
     day match {
