@@ -1,8 +1,8 @@
-import utility.{IDay, StopWatch}
+import run.DayRunner
+import utility.IDay
 
 import java.io.File
 import java.net.URL
-import scala.io.Source
 
 object TestRunner {
   val dayRunners: Array[IDay] = {
@@ -35,21 +35,14 @@ object TestRunner {
 
   def main(args: Array[String]): Unit = {
     val n: Int = args(0).toInt
-    println(getDayResult(n)._1)
+    runDayNumber(n)
   }
 
-  def dayString(n: Int): String = if (n < 10) s"0$n" else s"$n"
+  def runDayNumber(n: Int): Unit = {
+    runDay(dayRunners(n))
+  }
 
-  def getDayResult(n: Int): (String, Long) = getDayResultFromRunner(dayRunners(n))
-
-  def getDayResultFromRunner(day: IDay): (String, Long) = {
-    val n = day.dayNumber
-    val source: Source = Source.fromFile(s"input/${dayString(n)}.txt")
-    val input: String = try source.mkString finally source.close()
-    val stopWatch = StopWatch.start
-    val result = day.execute(input)
-    val executionMs = stopWatch.stop.millis
-    val msg = s"Day ${dayString(n)}: (Part 1: ${result.partA}, Part 2: ${result.partB})  [${executionMs}ms]"
-    (msg, executionMs)
+  def runDay(day: IDay): Unit = {
+    DayRunner(day).run()
   }
 }

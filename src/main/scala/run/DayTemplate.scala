@@ -1,6 +1,8 @@
-package utility
+package run
 
-class DayTemplate extends IDay(0) {
+import utility.IDay
+
+class DayTemplate extends IDay(-1) {
   override def execute(input: String): Result = {
     Result(part1(), part2())
   }
@@ -12,4 +14,6 @@ class DayTemplate extends IDay(0) {
   private def part2() = {
     incomplete
   }
+
+  val test = Result.Test(???, ???, None)
 }

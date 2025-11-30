@@ -1,5 +1,3 @@
-import TestRunner.dayString
-
 import java.io.{FileNotFoundException, InputStream}
 import java.net.{HttpURLConnection, URI}
 import java.nio.charset.StandardCharsets
@@ -72,10 +70,10 @@ object CreateNewDay {
   private def createDayScript(day: Int): Unit = {
     val dayPath = Paths.get(s"src/main/scala/days/Day${dayString(day)}.scala")
     if (!Files.exists(dayPath)) {
-      val templatePath = Paths.get("src/main/scala/utility/DayTemplate.scala")
+      val templatePath = Paths.get("src/main/scala/run/DayTemplate.scala")
       var fileContent = Files.readString(templatePath, StandardCharsets.UTF_8)
-      fileContent = fileContent.replace("DayTemplate", s"Day${dayString(day)}")
-        .replace("package utility", "package days\n\nimport utility.*")
+      fileContent = fileContent.replace("DayTemplate extends IDay(-1)", s"Day${dayString(day)} extends IDay($day)")
+        .replace("package run", "package days\n\nimport run.{DayRunner, Result}\nimport utility.*")
       Files.writeString(dayPath, fileContent, StandardCharsets.UTF_8)
       println(s"Created script for day $day. ($dayPath)")
     } else {
@@ -84,6 +82,8 @@ object CreateNewDay {
   }
 
   private def getInputPath(day: Int): Path = Paths.get(s"input/${dayString(day)}.txt")
+
+  private def dayString(n: Int): String = f"$n%02d"
 
   def printError(message: String): Unit = {
     System.err.println(message)
