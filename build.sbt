@@ -7,5 +7,5 @@ lazy val root = (project in file("."))
     name := "AdventOfCode2025"
   )
 
-libraryDependencies +=
-  "org.scala-lang.modules" %% "scala-parallel-collections" % "1.2.0"
+libraryDependencies += "org.scala-lang.modules" %% "scala-parallel-collections" % "1.2.0"
+libraryDependencies += "com.lihaoyi" %% "upickle" % "4.4.1"

@@ -18,7 +18,7 @@ class Day01 extends IDay(1) {
       State(pos, zeroes)
     }
 
-    moves.foldLeft(State.START)(applyMove).zeroes
+    moves.foldLeft(START)(applyMove).zeroes
   }
 
   private def part2(moves: Iterable[Move]) = {
@@ -30,14 +30,12 @@ class Day01 extends IDay(1) {
       State(pos, state.zeroes + zeroPasses)
     }
 
-    moves.foldLeft(State.START)(applyMove).zeroes
+    moves.foldLeft(START)(applyMove).zeroes
   }
 
   private case class State(pos: Int, zeroes: Int)
 
-  private object State {
-    val START: State = State(50, 0)
-  }
+  private val START: State = State(50, 0)
 
   private case class Move(dir: Int, count: Int)
 

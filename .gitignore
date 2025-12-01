@@ -48,4 +48,5 @@ build/
 
 ### Advent of Code ###
 input/
+answers/
 .cookie

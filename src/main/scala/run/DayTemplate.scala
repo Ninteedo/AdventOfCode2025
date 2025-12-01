@@ -1,6 +1,7 @@
 package run
 
 import utility.IDay
+import utility.IDay.incomplete
 
 class DayTemplate extends IDay(-1) {
   override def execute(input: String): Result = {
