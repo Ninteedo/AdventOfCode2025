@@ -68,12 +68,13 @@ object CreateNewDay {
   }
 
   private def createDayScript(day: Int): Unit = {
-    val dayPath = Paths.get(s"src/main/scala/days/Day${dayString(day)}.scala")
+    val dayPath = Paths.get(s"src/main/scala/day/Day${dayString(day)}.scala")
     if (!Files.exists(dayPath)) {
       val templatePath = Paths.get("src/main/scala/run/DayTemplate.scala")
       var fileContent = Files.readString(templatePath, StandardCharsets.UTF_8)
       fileContent = fileContent.replace("DayTemplate extends IDay(-1)", s"Day${dayString(day)} extends IDay($day)")
-        .replace("package run", "package days\n\nimport run.{DayRunner, Result}\nimport utility.*")
+        .replace("DayTemplate", s"Day${dayString(day)}")
+        .replace("package run", "package day\n\nimport run.{DayRunner, Result}\nimport utility.*")
       Files.writeString(dayPath, fileContent, StandardCharsets.UTF_8)
       println(s"Created script for day $day. ($dayPath)")
     } else {

@@ -17,3 +17,9 @@ class DayTemplate extends IDay(-1) {
 
   val test = Result.Test(???, ???, None)
 }
+
+object DayTemplate {
+  def main(args: Array[String]): Unit = {
+    DayRunner(DayTemplate()).run()
+  }
+}
