@@ -16,8 +16,8 @@ case class DayRunner(day: IDay) {
     try source.mkString finally source.close()
   }
 
-  def run(): Unit = {
-    runTestCase(day.test)
+  def run(skipTest: Boolean = false): Unit = {
+    if (!skipTest) runTestCase(day.test)
     val result = runMainCase(readInput)
     checkAndUpdateAnswers(result)
   }
@@ -137,7 +137,7 @@ case class DayRunner(day: IDay) {
 
   private object CorrectnessResponse {
     def read(part: Int): CorrectnessResponse = {
-      println(s"Was the answer for part $part correct [Yes/No/too High/too Low]? ")
+      println(s"Was the answer for part $part correct? [Yes/No/too High/too Low]: ")
       val response = readLine()
       val parsed = parse(response)
       parsed.getOrElse(read(part))

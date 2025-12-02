@@ -1,4 +1,5 @@
 import java.util.regex.Pattern
+import scala.annotation.tailrec
 
 package object utility {
   extension [T](it: IterableOnce[T]) {
@@ -52,6 +53,16 @@ package object utility {
     def half: Long = n / 2
 
     def digitCount: Int = n.toString.length - (if (n.isNonNegative) 0 else 1)
+
+    def factors: LazyList[Long] = {
+      LazyList.from(1L to n).filter(m => n % m == 0)
+    }
+
+    def exponent(b: Long): Long = b match {
+      case 0 => 1
+      case 1 => n
+      case x => n * exponent(x - 1)
+    }
   }
 
   extension (s: String) {
