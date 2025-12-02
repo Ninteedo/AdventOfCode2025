@@ -3,6 +3,8 @@ package day
 import run.{DayRunner, Result}
 import utility.*
 
+import scala.collection.mutable
+
 class Day02 extends IDay(2) {
   override def execute(input: String): Result = {
     val idRanges = input.trim.split(",").map(IdRange.parse).toList
@@ -22,11 +24,17 @@ class Day02 extends IDay(2) {
   }
 
   private def part2(idRanges: List[IdRange]) = {
+    val factorCache = mutable.Map.empty[Long, List[Long]]
+
     def checkInvalid(n: Long): Boolean = {
-      val s = n.toString
-      val len = s.length
-      val factors = len.factors.init.toList
-      (1 to len).exists(digits => factors.contains(digits) && s == s.substring(0, digits).repeat(len / digits))
+      val len = n.digitCount
+      val factors = factorCache.getOrElseUpdate(len, len.factors.init.toList)
+      factors.exists(digits =>
+        val mag = 10L.exponent(digits)
+        val c = len / digits
+        val base = n % mag
+        (1 until c.toInt).forall(c => (n / mag.exponent(c)) % mag == base)
+      )
     }
 
     sumInvalidIds(idRanges, checkInvalid)
