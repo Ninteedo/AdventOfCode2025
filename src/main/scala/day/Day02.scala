@@ -3,8 +3,6 @@ package day
 import run.{DayRunner, Result}
 import utility.*
 
-import scala.collection.mutable
-
 class Day02 extends IDay(2) {
   override def execute(input: String): Result = {
     val idRanges = input.trim.split(",").map(IdRange.parse).toList
@@ -14,8 +12,8 @@ class Day02 extends IDay(2) {
   private def part1(idRanges: List[IdRange]): Long = {
     def checkInvalid(n: Long): Boolean = {
       val len = n.digitCount
-      len % 2 == 0 && {
-        val mag = 10L.exponent(len / 2)
+      len.isEven && {
+        val mag = 10L.pow(len.half)
         n % mag == n / mag
       }
     }
@@ -24,16 +22,16 @@ class Day02 extends IDay(2) {
   }
 
   private def part2(idRanges: List[IdRange]) = {
-    val factorCache = mutable.Map.empty[Long, List[Long]]
+    val factorCache = Cache[Long, List[Long]]
 
     def checkInvalid(n: Long): Boolean = {
       val len = n.digitCount
-      val factors = factorCache.getOrElseUpdate(len, len.factors.init.toList)
+      val factors = factorCache.getOrCompute(len, len.factors.init.toList)
       factors.exists(digits =>
-        val mag = 10L.exponent(digits)
+        val mag = 10L.pow(digits)
         val c = len / digits
         val base = n % mag
-        (1 until c.toInt).forall(c => (n / mag.exponent(c)) % mag == base)
+        (1 until c.toInt).forall(c => (n / mag.pow(c)) % mag == base)
       )
     }
 
@@ -41,10 +39,14 @@ class Day02 extends IDay(2) {
   }
 
   private def sumInvalidIds(idRanges: List[IdRange], checkInvalid: Long => Boolean): Long = {
-    idRanges.flatMap(idRange => (idRange.start to idRange.end).filter(checkInvalid)).sum
+    idRanges.flatMap(_.filter(checkInvalid)).sum
   }
 
-  private case class IdRange(start: Long, end: Long)
+  private case class IdRange(start: Long, end: Long) {
+    private val range: Seq[Long] = start to end
+
+    def filter(predicate: Long => Boolean): Seq[Long] = range.filter(predicate)
+  }
 
   private object IdRange {
     def parse(s: String): IdRange = {

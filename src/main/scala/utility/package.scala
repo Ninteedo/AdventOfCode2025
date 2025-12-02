@@ -34,9 +34,9 @@ package object utility {
 //
 //    def isOdd: Boolean = n % 2 == 1
 
-    def half: Int = n / 2
+//    def half: Int = n / 2
 
-    def digitCount: Int = n.toString.length - (if (n.isNonNegative) 0 else 1)
+//    def digitCount: Int = n.toString.length - (if (n.isNonNegative) 0 else 1)
   }
 
   extension (n: Long) {
@@ -52,16 +52,27 @@ package object utility {
 
     def half: Long = n / 2
 
-    def digitCount: Int = n.toString.length - (if (n.isNonNegative) 0 else 1)
-
-    def factors: LazyList[Long] = {
-      LazyList.from(1L to n).filter(m => n % m == 0)
+    @tailrec
+    def digitCount: Int = {
+      if n == 0 then 1
+      else if n >= 0 then Math.log10(n.toDouble).toInt + 1
+      else if n == Long.MinValue then 19 else (-n).digitCount
     }
 
-    def exponent(b: Long): Long = b match {
-      case 0 => 1
-      case 1 => n
-      case x => n * exponent(x - 1)
+    def factors: LazyList[Long] = {
+      if (n < 1) throw new IllegalArgumentException("Can only calculate factors of a positive number")
+      else LazyList.from(1L to n).filter(m => n % m == 0)
+    }
+
+    def pow(b: Long): Long = {
+      @tailrec
+      def loop(exp: Long, base: Long, acc: Long): Long = {
+        if exp == 0 then acc
+        else if (exp & 1L) == 1L then loop(exp >>> 1, base * base, acc * base)
+        else loop(exp >>> 1, base * base, acc)
+      }
+
+      loop(b, n, 1L)
     }
   }
 
