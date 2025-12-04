@@ -1,5 +1,7 @@
 package utility
 
+import utility.Point2D.ADJACENTS
+
 case class Point2D(x: Int, y: Int) {
   def +(other: Point2D) = Point2D(x + other.x, y + other.y)
 
@@ -23,6 +25,8 @@ case class Point2D(x: Int, y: Int) {
     topLeft.x <= x && x <= bottomRight.x && topLeft.y <= y && y <= bottomRight.y
 
   def transpose: Point2D = Point2D(y, x)
+
+  def adjacents: LazyList[Point2D] = ADJACENTS.map(_ + this)
 
   override def toString = s"($x, $y)"
 }

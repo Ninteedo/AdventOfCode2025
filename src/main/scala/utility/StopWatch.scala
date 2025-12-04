@@ -14,7 +14,7 @@ object StopWatch {
   }
 
   case class Finished(start: Instant, end: Instant) {
-    val duration: Duration = start.until(end)
+    val duration: Duration = Duration.between(start, end)
 
     val millis: Long = duration.toMillis
   }
