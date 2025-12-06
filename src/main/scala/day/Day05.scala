@@ -3,9 +3,6 @@ package day
 import run.{DayRunner, Result}
 import utility.*
 
-import utility.IDay
-import utility.IDay.incomplete
-
 class Day05 extends IDay(5) {
   override def execute(input: String): Result = {
     val (rangesString, ingredientsString) = input.splitPair("\n\n")

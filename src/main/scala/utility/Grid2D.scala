@@ -15,6 +15,11 @@ case class Grid2D[T: ClassTag](entries: Vector[Vector[T]]) {
   def getRow(row: Int): Vector[T] = entries(row)
   def getCol(col: Int): Vector[T] = entries.map(_(col))
 
+  def headRow: Vector[T] = entries.head
+  def lastRow: Vector[T] = entries.last
+  def headCol: Vector[T] = getCol(0)
+  def lastCol: Vector[T] = getCol(colCount - 1)
+
   lazy val entriesByColumn: Vector[Vector[T]] = entries.transpose
 
   def contains(row: Int, col: Int): Boolean = row >= 0 && col >= 0 && row < rowCount && col < colCount
@@ -82,7 +87,7 @@ case class Grid2D[T: ClassTag](entries: Vector[Vector[T]]) {
 object Grid2D {
   def from2DCharArray[T: ClassTag](input: String, f: Char => T): Grid2D[T] = {
     val lines = input.split("\n")
-    val entries = lines.map(line => Vector.from(line.strip.map(f))).toVector
+    val entries = lines.map(line => Vector.from(line.map(f))).toVector
     Grid2D(entries)
   }
 }
