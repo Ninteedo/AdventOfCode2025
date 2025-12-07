@@ -87,6 +87,10 @@ case class Grid2D[T: ClassTag](entries: Vector[Vector[T]]) {
 object Grid2D {
   def from2DCharArray[T: ClassTag](input: String, f: Char => T): Grid2D[T] = {
     val lines = input.split("\n")
+    if (lines.nonEmpty) {
+      val lineLength = lines.head.length
+      assert(lines.tail.forall(_.length == lineLength), "Lines must all have same length to create 2D grid")
+    }
     val entries = lines.map(line => Vector.from(line.map(f))).toVector
     Grid2D(entries)
   }
