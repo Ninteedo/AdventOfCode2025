@@ -16,7 +16,7 @@ class DayTemplate extends IDay(-1) {
     incomplete
   }
 
-  val test = Result.Test(???, ???, None)
+  val test = Result.Test(???, None, ???)
 }
 
 object DayTemplate {

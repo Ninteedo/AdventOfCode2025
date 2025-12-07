@@ -56,7 +56,7 @@ class Day01 extends IDay(1) {
     res + ((res < 0).toInt * mod)
   }
 
-  val test = Result.Test("L68\nL30\nR48\nL5\nR60\nL55\nL1\nL99\nR14\nL82", 3, Some(6))
+  val test = Result.Test(3, Some(6), "L68\nL30\nR48\nL5\nR60\nL55\nL1\nL99\nR14\nL82")
 }
 
 object Day01 {

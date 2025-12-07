@@ -39,7 +39,7 @@ class Day05 extends IDay(5) {
     }
   }
 
-  val test = Result.Test("3-5\n10-14\n16-20\n12-18\n\n1\n5\n8\n11\n17\n32", 3, Some(14))
+  val test = Result.Test(3, Some(14), "3-5\n10-14\n16-20\n12-18\n\n1\n5\n8\n11\n17\n32")
 }
 
 object Day05 {

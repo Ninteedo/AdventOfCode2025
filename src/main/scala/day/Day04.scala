@@ -33,7 +33,7 @@ class Day04 extends IDay(4) {
     point.adjacents.count(p => rollsGrid.atOption(p).exists(_._1)) < 4
   }
 
-  val test = Result.Test("..@@.@@@@.\n@@@.@.@.@@\n@@@@@.@.@@\n@.@@@@..@.\n@@.@@@@.@@\n.@@@@@@@.@\n.@.@.@.@@@\n@.@@@.@@@@\n.@@@@@@@@.\n@.@.@@@.@.", 13, Some(43))
+  val test = Result.Test(13, Some(43), "..@@.@@@@.\n@@@.@.@.@@\n@@@@@.@.@@\n@.@@@@..@.\n@@.@@@@.@@\n.@@@@@@@.@\n.@.@.@.@@@\n@.@@@.@@@@\n.@@@@@@@@.\n@.@.@@@.@.")
 }
 
 object Day04 {
