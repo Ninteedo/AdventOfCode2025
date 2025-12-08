@@ -11,6 +11,8 @@ case class Point3D(x: Int, y: Int, z: Int) {
 
   def mannDist(other: Point3D): Int = (x - other.x).abs + (y - other.y).abs + (z - other.z).abs
 
+  def euclidDist(other: Point3D): Double = math.sqrt((x - other.x).square + (y - other.y).square + (z - other.z).square)
+
   def inVolume(vertex1: Point3D, vertex2: Point3D): Boolean = {
     x.inRangeInclusive(vertex1.x, vertex2.x) &&
       y.inRangeInclusive(vertex1.y, vertex2.y) &&
@@ -22,6 +24,12 @@ case class Point3D(x: Int, y: Int, z: Int) {
 
 object Point3D {
   def apply(triple: (Int, Int, Int)): Point3D = Point3D(triple._1, triple._2, triple._3)
+
+  def readCsv(csv: String): Point3D = {
+    val splits = csv.split(',')
+    assert(splits.length == 3, s"Point3D requires 3 elements, not ${splits.length}")
+    Point3D(splits(0).toInt, splits(1).toInt, splits(2).toInt)
+  }
 
   val ZERO: Point3D = Point3D(0, 0, 0)
 

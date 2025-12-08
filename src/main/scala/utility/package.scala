@@ -52,6 +52,8 @@ package object utility {
 
     def half: Long = n / 2
 
+    def square: Long = n * n
+
     @tailrec
     def digitCount: Int = {
       if n == 0 then 1
