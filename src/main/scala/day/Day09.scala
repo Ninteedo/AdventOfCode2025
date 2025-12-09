@@ -8,7 +8,7 @@ import scala.math.{max, min}
 class Day09 extends IDay(9) {
   override def execute(input: String): Result = {
     val redTiles = Helper.readLines(input, Point2D.readCsv).toList
-    val pairsWithAreas = redTiles.combinationPairs.map((a, b) => ((a, b), a.areaWith(b))).toList.sortBy(_._2).reverse
+    val pairsWithAreas = redTiles.toIndexedSeq.combinationPairs.map((a, b) => ((a, b), a.areaWith(b))).toList.sortBy(_._2).reverse
     Result(part1(pairsWithAreas), part2(redTiles, pairsWithAreas))
   }
 

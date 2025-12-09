@@ -5,9 +5,25 @@ package object utility {
   extension [T](it: IterableOnce[T]) {
     def distinctCount: Int = it.iterator.distinct.size
 
-    def combinationPairs: Iterator[(T, T)] = it.iterator.toList.combinations(2).map(l => (l(0), l(1)))
+    def slidingPairs: Iterator[(T, T)] = {
+      val iter = it.iterator
+      if (!iter.hasNext) Iterator.empty
+      else {
+        var prev = iter.next()
+        iter.map { next =>
+          val pair = (prev, next)
+          prev = next
+          pair
+        }
+      }
+    }
+  }
 
-    def slidingPairs: Iterator[(T, T)] = it.iterator.sliding(2).map(elements => (elements(0), elements(1)))
+  extension [T](xs: IndexedSeq[T]) {
+    def combinationPairs: Iterator[(T, T)] = for {
+      i <- xs.indices.iterator
+      j <- (i + 1 until xs.length).iterator
+    } yield (xs(i), xs(j))
   }
 
   extension (b: Boolean) {
