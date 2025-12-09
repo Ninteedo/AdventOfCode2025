@@ -21,6 +21,8 @@ case class Point2D(x: Int, y: Int) {
 
   def mannDist(other: Point2D): Int = (x - other.x).abs + (y - other.y).abs
 
+  def areaWith(other: Point2D): Long = ((x - other.x).abs + 1).toLong * ((y - other.y).abs + 1).toLong
+
   def inArea(topLeft: Point2D, bottomRight: Point2D): Boolean =
     topLeft.x <= x && x <= bottomRight.x && topLeft.y <= y && y <= bottomRight.y
 
@@ -33,6 +35,12 @@ case class Point2D(x: Int, y: Int) {
 
 object Point2D {
   def apply(pair: (Int, Int)): Point2D = Point2D(pair._1, pair._2)
+
+  def readCsv(csv: String): Point2D = {
+    val splits = csv.split(',')
+    assert(splits.length == 2, s"Point2D requires 2 elements, not ${splits.length}")
+    Point2D(splits(0).toInt, splits(1).toInt)
+  }
 
   val ZERO: Point2D = Point2D(0, 0)
 

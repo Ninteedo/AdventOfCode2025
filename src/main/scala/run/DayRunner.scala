@@ -17,7 +17,12 @@ case class DayRunner(day: IDay) {
   }
 
   def run(skipTest: Boolean = false): Unit = {
-    if (!skipTest) runTestCase(day.test)
+    if (!skipTest) {
+      day.test match {
+        case test: Result.Test => runTestCase(test)
+        case tests: List[Result.Test] => tests.foreach(runTestCase)
+      }
+    }
     val result = runMainCase(readInput)
     checkAndUpdateAnswers(result)
   }

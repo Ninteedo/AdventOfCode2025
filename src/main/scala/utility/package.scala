@@ -6,6 +6,8 @@ package object utility {
     def distinctCount: Int = it.iterator.distinct.size
 
     def combinationPairs: Iterator[(T, T)] = it.iterator.toList.combinations(2).map(l => (l(0), l(1)))
+
+    def slidingPairs: Iterator[(T, T)] = it.iterator.sliding(2).map(elements => (elements(0), elements(1)))
   }
 
   extension (b: Boolean) {
@@ -41,6 +43,8 @@ package object utility {
 
   extension (n: Long) {
     def inRangeInclusive(min: Long, max: Long): Boolean = n >= min && n <= max
+
+    def inRangeExclusive(min: Long, max: Long): Boolean = n >= min && n < max
 
     def isNonNegative: Boolean = n >= 0
 
