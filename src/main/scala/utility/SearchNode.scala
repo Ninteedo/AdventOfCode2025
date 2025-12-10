@@ -39,7 +39,9 @@ trait SearchNode[T <: SearchNode[T]] {
 
     while (frontier.nonEmpty) {
       val node: SearchNode[T] = frontier.dequeue()
-      if (node.atGoal) return Some(node)
+      if (node.atGoal) {
+        return Some(node)
+      }
 
       if (!(filterDuplicates && visited.contains(node))) {
         var nodesToAdd = node.descendents

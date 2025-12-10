@@ -113,4 +113,9 @@ package object utility {
     case Some(value) => value
     case None => throw new IllegalArgumentException(s"'$key' does not correspond to any value.")
   }
+
+  def printAndReturn[T](t: T): T = {
+    println(t)
+    t
+  }
 }
