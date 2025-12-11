@@ -11,6 +11,8 @@ object Helper {
   def readLines[A](input: String, f: String => A): Iterable[A] = input.lines().toScala(LazyList).map(f)
 
   def readLinesInt(input: String): Iterable[Int] = readLines(input, _.toInt)
+  
+  def forEachLine(input: String, f: String => Unit): Unit = input.lines().toScala(List).foreach(f)
 
   def splitPair(line: String, delimiter: String): (String, String) = {
     val pattern: Regex = s"(.+)$delimiter(.+)".r
