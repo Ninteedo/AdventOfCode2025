@@ -4,6 +4,8 @@ import run.{DayRunner, Result}
 import utility.*
 
 import scala.collection.mutable
+import com.google.ortools.Loader
+import com.google.ortools.sat.*
 
 class Day10 extends IDay(10) {
   override def execute(input: String): Result = {
@@ -19,56 +21,30 @@ class Day10 extends IDay(10) {
     machines.map(minimumRequiredButtonPresses).sum
   }
 
-  private def part2(machines: Iterable[Machine]): Int = {
-//    def minimumRequiredButtonPresses(machine: Machine): Int = {
-//      printAndReturn(P2SearchNode(machine, LazyList.continually(0).take(machine.joltageRequirements.length).toVector, List.empty, 0, None).bestFirstSearch().get.getResult)
-//    }
-    def minimumRequiredButtonPresses(machine: Machine): Int = {
-      val buttonMaxes: IndexedSeq[Int] = machine.buttons.map(_.map(machine.joltageRequirements).min)
-      val buttonLinks: IndexedSeq[Set[Int]] = machine.buttons.map(_.flatMap(machine.buttonsForLight)).zipWithIndex.map((linked, button) => linked - button)
+  private def part2(machines: Iterable[Machine]) = {
+    def minimumRequiredButtonPresses(machine: Machine): Long = {
+      Loader.loadNativeLibraries()
 
-      var runningBest = Int.MaxValue
-      var checked = 0
-      val buttonCount = machine.buttons.size
+      val model = new CpModel()
 
-      def recurse(button: Int, curr: IndexedSeq[Int]): Unit = {
-        checked += 1
-        if (curr.sum >= runningBest) {
-//          println(s"Pruning $curr (${curr.sum})")
-          return
-        }
+      val b = machine.buttons.size
+      val n = machine.joltageRequirements.size
 
-        val remainingJoltage = machine.remainingJoltage(curr)
-        if (remainingJoltage.exists(_ < 0)) {
-//          println(s"Excluding invalid joltages $curr")
-          return
-        } else if (button >= buttonCount) {
-          if (remainingJoltage.forall(_ == 0)) {
-            runningBest = math.min(runningBest, curr.sum)
-            println(s"$runningBest $curr")
-          } else {
-//            println(s"$curr did not add up ($remainingJoltage)")
-          }
-        } else {
-          val links = buttonLinks(button)
-          if (links.isEmpty) {
-            recurse(button + 1, curr :+ buttonMaxes(button))
-          } else {
-            val maxAllowed = machine.buttons(button).map(remainingJoltage).min
-            val definedLinks = links.filter(_ < button)
-            val remainingLinks = links.filter(_ > button)
-            if (remainingLinks.isEmpty) {
-              recurse(button + 1, curr :+ maxAllowed)
-            } else {
-//          println(s"Recursing from $curr, adding up to $maxAllowed")
-              Range.inclusive(0, maxAllowed).foreach(n => recurse(button + 1, curr :+ n))
-            }
-          }
-        }
-      }
+      val maxPress = machine.joltageRequirements.max
+      val pressArgs: Array[LinearArgument] = Array.tabulate(b)(j => model.newIntVar(0, maxPress, s"press_$j"))
 
-      recurse(0, IndexedSeq.empty)
-      printAndReturn(runningBest)
+      (0 until n).foreach(i => {
+        val linkedButtons = machine.buttons.zipWithIndex.filter((linked, j) => linked.contains(i)).map(_._2)
+        val sumExpr = LinearExpr.sum(linkedButtons.map(pressArgs).toArray)
+        model.addEquality(sumExpr, machine.joltageRequirements(i))
+      })
+
+      model.minimize(LinearExpr.sum(pressArgs))
+
+      val solver = new CpSolver()
+      solver.solve(model)
+
+      pressArgs.map(solver.value).sum
     }
 
     machines.map(minimumRequiredButtonPresses).sum
@@ -137,41 +113,6 @@ class Day10 extends IDay(10) {
         nodesToAdd.foreach(frontier.enqueue)
       }
       None
-    }
-  }
-
-  private case class P2SearchNode(machine: Machine,
-                                  joltages: Vector[Int],
-                                  pressedButtons: List[Int],
-                                  currentButton: Int,
-                                  parent: Option[P2SearchNode]) extends SearchNode[P2SearchNode] {
-
-//    override lazy val calculateOrderingValue: Int = machine.joltageRequirements.zip(joltages).map((required, current) => required - current).sum
-    override lazy val calculateOrderingValue: Int = -pressedButtons.size
-
-    override def descendents: Iterable[P2SearchNode] = {
-      Range(currentButton, machine.buttons.length).map(i => (addToggles(machine.buttons(i)), i)).filter(_._1.isDefined)
-        .map((joltages, i) => P2SearchNode(machine, joltages.get, i :: pressedButtons, i, parent))
-//      machine.buttons.zipWithIndex
-//        .flatMap((toggles, i) => addToggles(toggles)
-//          .map(joltages => P2SearchNode(machine, joltages, i :: pressedButtons, parent)))
-    }
-
-    override lazy val atGoal: Boolean = joltages == machine.joltageRequirements
-    override lazy val getParent: Option[P2SearchNode] = parent
-    override lazy val getResult: Int = pressedButtons.length
-
-//    override val filterDuplicates: Boolean = true
-//
-//    override def isDuplicateOf(other: SearchNode[P2SearchNode]): Boolean = {
-//      val o = other.asInstanceOf[P2SearchNode]
-//      machine == o.machine && joltages == o.joltages && pressedButtons.groupBy(identity) == o.pressedButtons.groupBy(identity)
-//    }
-
-    private def addToggles(toggles: Set[Int]): Option[Vector[Int]] = {
-      val res = toggles.foldLeft(joltages)((joltages, toggle) => joltages.updated(toggle, joltages(toggle) + 1))
-      if (res.zipWithIndex.forall((joltage, i) => joltage <= machine.joltageRequirements(i))) Some(res)
-      else None
     }
   }
 
